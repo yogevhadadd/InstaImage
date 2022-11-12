@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="app_name">authpro</string>
+    <string name="facebook_app_id">604557391358230</string>
+    <string name="fb_login_protocol_scheme">fb604557391358230</string>
+    <string name="facebook_client_token">20f44985d1e00ed5384b44dd52d6e3b9</string>
+</resources>
