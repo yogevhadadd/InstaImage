@@ -47,15 +47,16 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
+  firebase:
   flutter_lints: ^2.0.0
-  firebase_core:
+  firebase_core: ^1.8.0
   firebase_auth:
   google_sign_in: ^5.4.2
   firebase_analytics: ^9.3.6
   firebase_core_platform_interface: 4.5.1
   provider: ^6.0.0
-
-
+  image_picker:
+  firebase_storage: ^10.0.4
   google_maps_flutter:
   http: ^0.13.4
   flutter_polyline_points: ^1.0.0
@@ -63,6 +64,9 @@ dev_dependencies:
   flutter_svg:
   geolocator: ^8.0.0
   geocoding: ^2.0.4
+  images_picker:
+  cloud_firestore:
+  permission_handler:
 # For information on the gener
 # ic Dart part of this file,  see the
 # following page: https://dart.dev/tools/pub/pubspec

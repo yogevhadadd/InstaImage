@@ -5,7 +5,8 @@ import '../controllers/login_controller.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 
-import '../setting/setting.dart';
+import '../image_retrive.dart';
+import '../upload.dart';
 
 
 
@@ -13,18 +14,14 @@ class MapPage extends StatefulWidget {
   final LoginController myParam;
   const MapPage(this.myParam, {super.key});
   @override
-  State<MapPage> createState() => _MyMapState(this.myParam);
+  State<MapPage> createState() => _MyMapState(myParam);
 }
 
 class _MyMapState extends State<MapPage> {
   _MyMapState(this.myParam);
   final LoginController myParam;
-
-
-
   LatLng? latLnga;
-  // BitmapDescriptor d = BitmapDescriptor.defaultMarker;
-  // late Position a;
+  late String? a = "";
   final Completer<GoogleMapController> _controller = Completer();
   late  CameraPosition _kGoogle = CameraPosition(target: LatLng(0, 0));
   final List<Marker> _markers = <Marker>[];
@@ -32,49 +29,20 @@ class _MyMapState extends State<MapPage> {
   void initState() {
     // setMarker();
     setLocation();
-
     super.initState();
   }
 
-  // void setMarker(){
-  //   BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/fb.png").then((value)
-  //   => {
-  //     d = value,
-  //   }
-  //   );
-  // }
+  void addMarker(LatLng latLng){
+    setState(() {
+      _markers.add(Marker(
 
-  void addMarker(x,y){
-    _markers.add(const Marker(
-      markerId: MarkerId("3"),
-      position: LatLng(51, 51),
-      infoWindow: InfoWindow(
-        title: 'My Current Location',
-      ),),);
-    _markers.add(const Marker(
-      markerId: MarkerId("4"),
-      position: LatLng(41, 41),
-      infoWindow: InfoWindow(
-        title: 'My Current Location',
-      ),),);
-    _markers.add(const Marker(
-      markerId: MarkerId("5"),
-      position: LatLng(31, 31),
-      infoWindow: InfoWindow(
-        title: 'My Current Location',
-      ),),);
-    _markers.add(const Marker(
-      markerId: MarkerId("6"),
-      position: LatLng(21, 21),
-      infoWindow: InfoWindow(
-        title: 'My Current Location',
-      ),),);
-    _markers.add(const Marker(
-      markerId: MarkerId("7"),
-      position: LatLng(11, 11),
-      infoWindow: InfoWindow(
-        title: 'My Current Location',
-      ),),);
+        markerId: MarkerId(latLng.toString()),
+        position: latLng,
+        onTap:() {
+          build1(latLng);
+        },
+        ),);
+    });
   }
 
   Future<Position> getUserCurrentLocation() async {
@@ -88,7 +56,6 @@ class _MyMapState extends State<MapPage> {
 
   void setLocation(){
     getUserCurrentLocation().then((value) async {
-
       _kGoogle = CameraPosition(target: LatLng(value.latitude, value.longitude));
       // marker added for current users location
       _markers.add(
@@ -129,13 +96,11 @@ class _MyMapState extends State<MapPage> {
       setState(() {});
     });
   }
-
-
-
-
-
-
-
+  @override
+  Future build1(LatLng latLng) {
+    String img = latLng.latitude.toString() + latLng.longitude.toString();
+      return Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImageRetrive(text: img)));
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -167,22 +132,24 @@ class _MyMapState extends State<MapPage> {
         ),
         body: GoogleMap(
           mapType: MapType.normal,
-          markers: Set<Marker>.of(_markers),
+          markers: Set.from(_markers),
           initialCameraPosition: _kGoogle,
           myLocationEnabled: true,
           compassEnabled: true,
           onTap: (LatLng latLng) {
-            latLnga = latLng
-            // you have latitude and longitude here
-            var latitude = latLng.latitude;
-            var longitude = latLng.longitude;
+            latLnga = latLng;
+            a = latLng.latitude.toString() + latLng.longitude.toString();
+            addMarker(latLng);
           },
           onMapCreated: (GoogleMapController controller){
             _controller.complete(controller);
           },
         ),
         floatingActionButton: FloatingActionButton(
-           onPressed: () { addMarker();},
+           onPressed: () { Navigator.push(
+             context,
+             MaterialPageRoute(builder: (context) => ImageUpload(latLngaaaa: a)),
+           );},
         ),
       ),
     );
