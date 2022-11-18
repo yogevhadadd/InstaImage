@@ -67,6 +67,9 @@ dev_dependencies:
   images_picker:
   cloud_firestore:
   permission_handler:
+  camera:
+  path_provider:
+  path:
 # For information on the gener
 # ic Dart part of this file,  see the
 # following page: https://dart.dev/tools/pub/pubspec

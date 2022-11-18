@@ -14,24 +14,22 @@ class _ImageRetriveState extends State<ImageRetrive> {
 
   String downloadURL = "";
   _ImageRetriveState(this.text){
-    FirebaseStorage.instance.ref().getDownloadURL().then((value) => downloadURL = value);
+    // FirebaseStorage.instance.ref().getDownloadURL().then((value) => downloadURL = value);
 
   }
 
 
   Widget build(BuildContext context) {
+    //
+    // FireStorageService.loadFromStorage(context, "text")
+    //     .then((downloadUrl) {
+    //   downloadURL = downloadUrl;
+    // });
 
-    FireStorageService.loadFromStorage(context, "text")
-        .then((downloadUrl) {
-      downloadURL = downloadUrl;
-    });
-    print(text);
-    return Scaffold(
-      appBar: AppBar(title: const Text("Your Ifdddsddddddddddddfmssdsageds")),
-      body:
-
-      Container(child:
-      Ink.image(image: NetworkImage("https://firebasestorage.googleapis.com/v0/b/instaimage-f6f3b.appspot.com/o/images%2F${text}?alt=media&toke"))),
+    return Opacity(opacity: 1,
+      child: Scaffold(backgroundColor: Colors.white54,
+        body: Ink.image(image: NetworkImage("https://firebasestorage.googleapis.com/v0/b/instaimage-f6f3b.appspot.com/o/images%2F${text}?alt=media&toke")),
+      ),
     );
   }
 }
