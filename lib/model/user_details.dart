@@ -14,10 +14,10 @@ class UserDetails {
   }
   Map<String, dynamic> toJson() {
     // object - data
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['displayName'] = this.displayName;
-    data['email'] = this.email;
-    data['photoUrl]'] = this.photoURL;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['displayName'] = displayName;
+    data['email'] = email;
+    data['photoUrl]'] = photoURL;
 
     return data;
 

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import '../controllers/login_controller.dart';
+import '../login/login_controller.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:camera/camera.dart';
-
-import '../image_retrive.dart';
+import '../images/image_retrive.dart';
 import '../upload.dart';
 
 
@@ -16,40 +15,38 @@ class MapPage extends StatefulWidget {
   final LoginController myParam;
   const MapPage(this.myParam, {super.key});
   @override
-  State<MapPage> createState() => _MyMapState(myParam);
+  State<MapPage> createState() => _MyMapState();
 }
 
 class _MyMapState extends State<MapPage> {
-  _MyMapState(this.myParam);
-  final LoginController myParam;
-  LatLng? latLnga;
-  late String? a = "";
+  LatLng? position;
   final Completer<GoogleMapController> _controller = Completer();
-  late  CameraPosition _kGoogle = CameraPosition(target: LatLng(0, 0));
+  late  CameraPosition _kGoogle = const CameraPosition(target: LatLng(0, 0));
   final List<Marker> _markers = <Marker>[];
-  late CameraDescription? aaaaa;
+  late CameraDescription? cameraDescription;
 
   void initState() {
     setLocation();
     markers();
-    aaa();
+    initCamera();
     super.initState();
   }
-  aaa() async {
+
+  initCamera() async {
     final cameras = await availableCameras();
-    aaaaa = cameras.first;
+    cameraDescription = cameras.first;
     // Get a specific camera from the list of available cameras.
   }
+
   Future markers() async{
     await FirebaseFirestore.instance.collection('marker').get().then((value) =>
       value.docs.forEach((element) {
-        print(element['position'] );
-        final aasda =  element['position'].toString().split(",");
-        LatLng asasd  = LatLng(double.parse(aasda[0]), double.parse(aasda[1]));
-        addMarker(asasd);
+        final imagePosition =  element['position'].toString().split(",");
+        addMarker(LatLng(double.parse(imagePosition[0]), double.parse(imagePosition[1])));
       })
     );
   }
+
   void addMarker(LatLng latLng){
 
     setState(() {
@@ -57,7 +54,28 @@ class _MyMapState extends State<MapPage> {
         markerId: MarkerId(latLng.toString()),
         position: latLng,
         onTap:() {
-          showMarker(latLng);
+          showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return GestureDetector(
+                    child: Image.network(
+                      "https://firebasestorage.googleapis.com/v0/b/instaimage-f6f3b.appspot.com/o/images%2F${latLng.latitude.toString()},${latLng.longitude.toString()}?alt=media&toke"
+
+                     , width: 240,
+                    ),
+                    onTap: () {
+                      var a = "${latLng.latitude},${latLng.longitude}";
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImageRetrive(text: a)));
+
+                    });
+                  // Container(
+                  //   decoration:  BoxDecoration(
+                  //     image: DecorationImage(
+                  //         fit: BoxFit.cover),
+                  //   ),
+                  // );
+              });
+          // showMarker(latLng);
         },
         ),);
     });
@@ -78,7 +96,7 @@ class _MyMapState extends State<MapPage> {
       // marker added for current users location
       _markers.add(
         Marker(
-          markerId: const MarkerId("1"),
+          markerId: const MarkerId("My Uer"),
           position: LatLng(value.latitude, value.longitude),
           infoWindow: const InfoWindow(
             title: 'My Current Location',
@@ -114,17 +132,15 @@ class _MyMapState extends State<MapPage> {
       setState(() {});
     });
   }
-  @override
+
   Future showMarker(LatLng latLng) {
-    String img = latLng.latitude.toString() + "," + latLng.longitude.toString();
+    String img = "${latLng.latitude},${latLng.longitude}";
       return Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImageRetrive(text: img)));
   }
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.green[700],
@@ -132,11 +148,11 @@ class _MyMapState extends State<MapPage> {
             children: <Widget>[
               CircleAvatar(
                 backgroundImage:
-                Image.network(myParam.userDetails!.photoURL ?? "").image,
+                Image.network(widget.myParam.userDetails!.photoURL ?? "").image,
                 radius: 22,
               ),
               const SizedBox(width: 15,),
-              Text(myParam.userDetails!.displayName ?? ""),
+              Text(widget.myParam.userDetails!.displayName ?? ""),
             ]
           ),
           actions: <Widget>[
@@ -158,23 +174,15 @@ class _MyMapState extends State<MapPage> {
           myLocationEnabled: true,
           compassEnabled: true,
           onTap: (LatLng latLng) {
-            latLnga = latLng;
-            a = latLng.latitude.toString() + "," + latLng.longitude.toString();
+            position = latLng;
+            String stringPosition = "${latLng.latitude},${latLng.longitude}";
             // addMarker(latLng);
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImageUpload(latLngaaaa: a, aaaaa: aaaaa as CameraDescription,)));
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ImageUpload(positionString: stringPosition, cameraDescription: cameraDescription as CameraDescription,)));
           },
           onMapCreated: (GoogleMapController controller){
             _controller.complete(controller);
           },
         ),
-        // floatingActionButton: FloatingActionButton(
-        //
-        //    onPressed: () {
-        //      Navigator.push(
-        //      context,
-        //      MaterialPageRoute(builder: (context) => ImageUpload(latLngaaaa: a)),);
-        //    },
-        // ),
       ),
     );
   }
